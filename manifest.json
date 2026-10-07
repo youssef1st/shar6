@@ -1,14 +1,14 @@
 {
-  "id": "/Shar8/",
-  "name": "شرح | Shar7",
-  "short_name": "Shar7",
+  "id": "/Shar6/",
+  "name": "شرح | Shar6",
+  "short_name": "Shar6",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2196f3",
   "icons": [
     {
-      "src": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=512&h=512&fit=crop",
+      "src": "https://shar7-eg.com/wp-content/uploads/2022/02/1x-1.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
