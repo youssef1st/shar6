@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>شرح | Shar6</title>
+
+<!-- أيقونات المتصفح والموبايل -->
+<link rel="icon" href="https://shar7-eg.com/wp-content/uploads/2022/02/1x-1.png" type="image/png">
+<link rel="apple-touch-icon" href="https://shar7-eg.com/wp-content/uploads/2022/02/1x-1.png">
+<meta name="theme-color" content="#2196f3">
+
+<!-- ربط ملف الـ Manifest الخارجي الصحيح -->
+<link rel="manifest" href="manifest.json">
+
+<style>
+:root {
+  --blue: #2196f3;
+  --blue-hover: #1976d2;
+  --red: #e53935;
+  --green: #22c55e;
+  --bg: #f4f6fa;
+  --card: #ffffff;
+  --text: #161616;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --shadow: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] {
+  --bg: #0e0f12;
+  --card: #16181d;
+  --text: #f2f2f2;
+  --muted: #9aa0aa;
+  --border: #26292f;
+  --shadow: rgba(0, 0, 0, 0.3);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: 'Tahoma', 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ---------- Splash Screen ---------- */
+#splash {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+#splash.hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+#splash img {
+  width: 110px;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+.dots { display: flex; gap: 6px; margin-top: 22px; }
+.dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+  animation: blink 1s infinite ease-in-out;
+}
+.dots span:nth-child(2) { animation-delay: 0.15s; }
+.dots span:nth-child(3) { animation-delay: 0.30s; }
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.2; }
+  40% { opacity: 1; }
+}
+
+/* ---------- Layout & Header ---------- */
+#app { display: none; min-height: 100vh; flex-direction: column; }
+header.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+header.top img { height: 32px; cursor: pointer; }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.iconbtn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+.iconbtn:hover { background: var(--border); }
+.pill {
+  background: var(--blue);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+.progress-outer { height: 4px; background: var(--border); width: 100%; }
+.progress-inner { height: 100%; background: var(--blue); width: 0%; transition: width 0.4s ease; }
+
+/* ---------- Home View ---------- */
+#home {
+  max-width: 760px;
+  margin: 60px auto;
+  padding: 0 16px;
+  text-align: center;
+}
+#home img { width: 100px; margin-bottom: 16px; }
+#home h1 { font-size: 28px; margin-bottom: 8px; font-weight: 800; }
+#home p { color: var(--muted); margin-bottom: 36px; font-size: 15px; }
+.subject-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.subject-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 32px 20px;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 12px var(--shadow);
+}
+.subject-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(33, 150, 243, 0.15);
+  border-color: var(--blue);
+}
+.subject-card .emoji { font-size: 46px; margin-bottom: 12px; }
+.subject-card h3 { margin: 8px 0 4px; font-size: 18px; }
+.subject-card span { color: var(--muted); font-size: 13px; }
+
+/* ---------- Course View ---------- */
+#course {
+  display: none;
+  grid-template-columns: 1fr 340px;
+  gap: 0;
+  max-width: 1350px;
+  margin: 0 auto;
+  width: 100%;
+}
+@media(max-width: 880px) {
+  #course { grid-template-columns: 1fr; }
+  aside.side { display: none; }
+  aside.side.mobile-open { display: block; position: fixed; inset: 0; z-index: 200; overflow-y: auto; }
+}
+
+main.content { padding: 24px; }
+.back {
+  background: none;
+  border: none;
+  color: var(--blue);
+  cursor: pointer;
+  font-weight: 700;
+  margin-bottom: 16px;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+}
+.back:hover { text-decoration: underline; }
+
+.video-box {
+  background: #000;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 16/9;
+  box-shadow: 0 8px 24px var(--shadow);
+}
+.video-box iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+.video-title { font-size: 19px; font-weight: 800; margin-top: 16px; }
+
+.nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.navbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  transition: 0.2s;
+}
+.navbtn:hover { background: var(--bg); border-color: var(--blue); }
+.completedbtn {
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 24px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+.completedbtn:hover { background: var(--blue-hover); }
+.completedbtn.done { background: var(--green); }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.card h4 { margin: 0 0 12px; font-size: 16px; color: var(--blue); display: flex; align-items: center; gap: 8px; }
+
+/* ---------- Activity / Quiz Card ---------- */
+.activity { border-inline-start: 4px solid var(--red); }
+.activity h4 { color: var(--red); }
+.q-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 14px;
+  gap: 12px;
+}
+.q-row:last-of-type { border-bottom: none; }
+.q-opts label { margin-inline-start: 12px; cursor: pointer; font-weight: 600; }
+.checkbtn {
+  margin-top: 14px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.checkbtn:hover { background: var(--blue-hover); }
+.result { font-size: 14px; margin-top: 12px; font-weight: 700; }
+
+/* ---------- Sidebar ---------- */
+aside.side {
+  border-inline-start: 1px solid var(--border);
+  padding: 20px;
+  background: var(--card);
+  min-height: calc(100vh - 60px);
+}
+.course-title { font-weight: 800; margin-bottom: 18px; font-size: 16px; color: var(--text); }
+.unit { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; background: var(--bg); }
+.unit-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  user-select: none;
+  background: var(--card);
+}
+.unit-lessons { display: none; }
+.unit.open .unit-lessons { display: block; }
+.unit.open .chev { transform: rotate(45deg); }
+.chev { transition: transform 0.2s; color: var(--blue); font-weight: 900; font-size: 16px; }
+
+.lesson-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  border-top: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.lesson-item:hover { background: var(--card); }
+.lesson-item.active { color: var(--blue); font-weight: 700; background: rgba(33, 150, 243, 0.08); }
+.lesson-item .num { color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+
+<!-- Splash Screen -->
+<div id="splash">
+  <img src="https://shar7-eg.com/wp-content/uploads/2022/02/1x-1.png" alt="Shar6">
+  <div class="dots"><span></span><span></span><span></span></div>
+</div>
+
+<!-- Main App -->
+<div id="app">
+  <header class="top">
+    <div class="header-right">
+      <button class="iconbtn" onclick="toggleTheme()" title="تبديل الوضع">🌓</button>
+      <button class="iconbtn" onclick="toggleMobileSide()" title="القائمة الجانبية" style="display:none;" id="mobileMenuBtn">☰</button>
+      <span id="progLabel" style="font-size:13px;color:var(--muted);"></span>
+    </div>
+    <div class="pill" id="progPill">COMPLETE 0%</div>
+    <img src="https://shar7-eg.com/wp-content/uploads/2022/02/1x-1.png" alt="Shar6" onclick="goHome()">
+  </header>
+  <div class="progress-outer"><div class="progress-inner" id="progBar"></div></div>
+
+  <!-- Home View -->
+  <div id="home">
+    <img src="https://shar7-eg.com/wp-content/uploads/2022/02/1x-1.png" alt="Shar6">
+    <h1>منصة Shar6</h1>
+    <p>اختار المادة وابدأ درسك دلوقتي وتابع إنجازك خطوة بخطوة</p>
+    <div class="subject-grid">
+      <div class="subject-card" onclick="openCourse('science')">
+        <div class="emoji">🧪</div>
+        <h3>Science</h3>
+        <span>الصف السادس الابتدائي</span>
+      </div>
+      <div class="subject-card" onclick="openCourse('math')">
+        <div class="emoji">📐</div>
+        <h3>Math</h3>
+        <span>الصف السادس الابتدائي - مستر طلعت الغيطي</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Course View -->
+  <div id="course">
+    <main class="content">
+      <button class="back" onclick="goHome()">← رجوع للمواد</button>
+      
+      <div class="video-box">
+        <iframe id="vFrame" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+      </div>
+      
+      <div class="video-title" id="vTitle"></div>
+      
+      <div class="nav-row">
+        <button class="navbtn" onclick="stepLesson(-1)">‹ الدرس السابق</button>
+        <button class="completedbtn" id="doneBtn" onclick="toggleDone()">تم الإكمال ✓</button>
+        <button class="navbtn" onclick="stepLesson(1)">الدرس التالي ›</button>
+      </div>
+
+      <!-- Summary Card -->
+      <div class="card">
+        <h4>📝 ملخص الدرس</h4>
+        <p id="summaryText" style="font-size:14px;line-height:1.8;color:var(--muted);margin:0;"></p>
+      </div>
+
+      <!-- Quiz Card -->
+      <div class="card activity">
+        <h4>نشاط تفاعلي</h4>
+        <p style="font-size:13px;color:var(--muted);margin-top:-6px;">ضع علامة (✓) أو (✗):</p>
+        <div class="q-row">
+          <span>1. هل قمت بفهم أفكار هذا الجزء من الشرح جلياً؟</span>
+          <span class="q-opts">
+            <label><input type="radio" name="q1" value="true"> ✓</label>
+            <label><input type="radio" name="q1" value="false"> ✗</label>
+          </span>
+        </div>
+        <div class="q-row">
+          <span>2. هل تدربت على حل المسائل/التطبيقات الخاصة بالدرس؟</span>
+          <span class="q-opts">
+            <label><input type="radio" name="q2" value="true"> ✓</label>
+            <label><input type="radio" name="q2" value="false"> ✗</label>
+          </span>
+        </div>
+        <button class="checkbtn" onclick="checkAnswers()">تحقق من إجابتك</button>
+        <div class="result" id="result"></div>
+      </div>
+    </main>
+
+    <!-- Sidebar -->
+    <aside class="side" id="sidebar">
+      <div class="course-title" id="sideCourseTitle">الصف السادس الابتدائي</div>
+      <div id="unitsWrap"></div>
+    </aside>
+  </div>
+</div>
+
+<script>
+// --- Data Structures ---
+const unitsScience = [
+  { name: 'Chapter 1: Air & Burning', lessons: [
+    ['Grade 6 | Science | How Things Burn and Air | Chapter 1 - Lesson 1', 'pwz8z-46dNI'],
+    ['Grade 6 | The Role of Oxygen | Chapter 1 - Lesson 2', 'EfgGzYmnUME'],
+    ['Grade 6 | Science | Exercise | The Role of Oxygen | Chapter 1 - Lesson 1&2', '8iCmLh7yxig'],
+    ['Grade 6 | Science | Air After Burning | Chapter 1 - Lesson 3', 'JK_TN6IiaAU']
+  ]},
+  { name: 'Chapter 2: Respiration', lessons: [
+    ['Grade 6 | Science | How Breathing Works | Chapter 2 - Lesson 1', 'QHiqJZQivzY'],
+    ['Grade 6 | Science | How Lungs Work | Chapter 2 - Lesson 2', '1-h_Poo_VV4']
+  ]},
+  { name: 'Chapter 3: Digestive System', lessons: [
+    ['Grade 6 | Science | Where Food Goes | Chapter 3 - Lesson 1', 'G7KLc7_F9NA'],
+    ['Grade 6 | Science | The Function of Saliva | Chapter 3 - Lesson 2', 'z1WdDoBxa6I'],
+    ['Grade 6 | Science | How Absorption Works | Chapter 3 - Lesson 3', 'RTz8g6WuXII']
+  ]}
+];
+
+const unitsMath = [
+  { name: 'Unit 1: Factors & Multiples', lessons: [
+    ['Math | grade 6 | Lesson 1 | Divisibility', 'xfbNrDQI6Dc'],
+    ['Math | grade 6 | Lesson 2 | Factorizing a Number to its Prime Factors', 'TXLVzXW7xMo'],
+    ['Math | grade 6 | Lesson 3 | Writing Expressions Using the G.C.F هدية من المنصة', '-h9om-8soco']
+  ]},
+  { name: 'Unit 2: Rational Numbers & Number Line', lessons: [
+    ['Math | grade 6 | Unit 2 | Lesson 1-2 | Using a Number Line to Describe Data', 'znvIAocQiCA'],
+    ['Math | grade 6 | Unit 2 | Lesson 3 | Analyzing Rational Numbers by Using Models', 'HS9MlosRMw4'],
+    ['Math | grade 6 | Unit 2 | Lesson 4 | Comparing and Ordering Rational Numbers#حل_المعاصر', '6QHBYLKLiiI'],
+    ['Math | grade 6 | Unit 2 | Lesson 5-6 | Exploring Absolute Value#حل_المعاصر', '10be6n-7Mnk']
+  ]},
+  { name: 'Unit 3: Algebraic Expressions', lessons: [
+    ['Math | grade 6 | October Revision #حل_المعاصر', '3hcCz5eD9WM'],
+    ['Math | grade 6 | Unit 3 | Lesson 1-2 | Creating Mathematical Expressions #حل_المعاصر', 'I1IFnDr8Q54'],
+    ['Math | grade 6 | Unit 3 | Lesson 3 | Writing Algebraic Expressions#حل_المعاصر', 'TInORMEZrkQ'],
+    ['Math | grade 6 | Unit 3 | Lesson 4 - 6 | Ordering of Operations and Exponents#حل_المعاصر', '5KYzvFmT9pE']
+  ]},
+  { name: 'Units 4 & 5 Revisions & November', lessons: [
+    ['مصدقت امتحان اكتوبر خلص على خير ....امتحان نوفمبر :', 'NFpEj4H19IU'],
+    ['Math | grade 6 | تلخيص unit 4 + حل مسائل المعاصر الهامة', 'jYlkxMgr_44'],
+    ['Math | grade 6 | تلخيص unit 5 + حل مسائل المعاصر الهامة', 'NG7KehLjsgE'],
+    ['Math | grade 6 | اقوى وأفضل مراجعة لشهر نوفمبر', 'WTrxbum0h2U']
+  ]},
+  { name: 'Unit 6: Data & Statistics', lessons: [
+    ['Math | grade 6 | Unit 6 - Lesson 1 | Data and Statistical Questions', 'k_Bap7xu4Zo'],
+    ['Math Grade 6 | Unit 6 - Lesson 2 & 3 | Exploring the Histogram', 'wbDmWK_lmmc'],
+    ['Math Grade 6 | Unit 6 - Lesson 4 | Exploring Box Plots', '4QMdWujXPTo'],
+    ['Math Grade 6 | Unit 6 Lesson 5 | Applications on Data Representations', 'GWgMLCsTJ4o']
+  ]},
+  { name: 'Unit 7
