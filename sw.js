@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shar8-v4';
+const CACHE_NAME = 'shar6-v1';
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
