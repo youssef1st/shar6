@@ -5,13 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>شرح | Shar6</title>
 
-<!-- أيقونات المتصفح والموبايل -->
 <link rel="icon" href="https://shar7-eg.com/wp-content/uploads/2022/02/1x-1.png" type="image/png">
-<link rel="apple-touch-icon" href="https://shar7-eg.com/wp-content/uploads/2022/02/1x-1.png">
 <meta name="theme-color" content="#2196f3">
-
-<!-- ربط ملف الـ Manifest الخارجي الصحيح -->
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="./manifest.json">
 
 <style>
 :root {
@@ -56,7 +52,7 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  transition: opacity 0.5s ease, visibility 0.5s ease;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
 }
 #splash.hide {
   opacity: 0;
@@ -197,7 +193,6 @@ main.content { padding: 24px; }
   box-shadow: 0 8px 24px var(--shadow);
 }
 .video-box iframe { width: 100%; height: 100%; border: 0; display: block; }
-
 .video-title { font-size: 19px; font-weight: 800; margin-top: 16px; }
 
 .nav-row {
@@ -459,4 +454,229 @@ const unitsMath = [
     ['Math Grade 6 | Unit 6 - Lesson 4 | Exploring Box Plots', '4QMdWujXPTo'],
     ['Math Grade 6 | Unit 6 Lesson 5 | Applications on Data Representations', 'GWgMLCsTJ4o']
   ]},
-  { name: 'Unit 7
+  { name: 'Unit 7: Balance of Data Sets & Guidance', lessons: [
+    ['Math Grade 6 | Unit 7 Lesson 1 ,2 | Exploring the Balance of Data Sets', '7YVmMOBlcVY'],
+    ['Math Grade 6 | Unit 7 | Lesson 3 | Exploring Median, Mode and Outliers', 'IxN1IClithA'],
+    ['صرخة طالب | التعليم بين الضغط والأمل🧠', 'fk2JOKQUZqc'],
+    ['التنمر على بنتى ......', '0pNCsuKTV_A'],
+    ['التحرش مش هزار… كلمة مهمة لكل طالب', 'Thdejvgfsno'],
+    ['حجز كورسات مستر طلعت الغيطي 2026 / 2027 | الحجز أونلاين وداخل السنتر والمنصة', '0SXr2cbIBrM']
+  ]}
+];
+
+let currentSubject = 'science';
+let activeUnits = unitsScience;
+let flatLessons = [];
+let currentIdx = 0;
+let completedSet = new Set();
+
+// --- App Initialization ---
+window.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
+
+  setTimeout(() => {
+    const splash = document.getElementById('splash');
+    const app = document.getElementById('app');
+    if (splash) splash.classList.add('hide');
+    if (app) app.style.display = 'flex';
+  }, 500);
+});
+
+function checkMobile() {
+  const btn = document.getElementById('mobileMenuBtn');
+  if (window.innerWidth <= 880) {
+    if (btn) btn.style.display = 'inline-flex';
+  } else {
+    if (btn) btn.style.display = 'none';
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) sidebar.classList.remove('mobile-open');
+  }
+}
+
+function toggleTheme() {
+  const d = document.documentElement;
+  const newTheme = d.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  d.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+}
+
+function toggleMobileSide() {
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar) sidebar.classList.toggle('mobile-open');
+}
+
+// --- Navigation & Core Functions ---
+function openCourse(subject) {
+  currentSubject = subject;
+  activeUnits = (subject === 'math') ? unitsMath : unitsScience;
+
+  flatLessons = [];
+  activeUnits.forEach(u => u.lessons.forEach(l => flatLessons.push(l)));
+
+  const titleEl = document.getElementById('sideCourseTitle');
+  if (titleEl) {
+    titleEl.textContent = 'الصف السادس الابتدائي | ' + (subject === 'math' ? 'Math' : 'Science');
+  }
+
+  try {
+    const savedDone = JSON.parse(localStorage.getItem('completed_' + subject) || '[]');
+    completedSet = new Set(savedDone);
+  } catch(e) {
+    completedSet = new Set();
+  }
+
+  const home = document.getElementById('home');
+  const course = document.getElementById('course');
+  if (home) home.style.display = 'none';
+  if (course) course.style.display = 'grid';
+
+  renderSidebar();
+  loadLesson(0);
+}
+
+function renderSidebar() {
+  const wrap = document.getElementById('unitsWrap');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+
+  activeUnits.forEach((u, ui) => {
+    const div = document.createElement('div');
+    div.className = 'unit' + (ui === 0 ? ' open' : '');
+
+    const head = document.createElement('div');
+    head.className = 'unit-head';
+    head.innerHTML = `<span>${u.name}</span><span class="chev">+</span>`;
+    head.onclick = () => div.classList.toggle('open');
+    div.appendChild(head);
+
+    const lw = document.createElement('div');
+    lw.className = 'unit-lessons';
+
+    u.lessons.forEach(l => {
+      const idx = flatLessons.indexOf(l);
+      const it = document.createElement('div');
+      it.className = 'lesson-item';
+      it.dataset.idx = idx;
+      it.innerHTML = `<span>${l[0]}</span><span class="num">${idx + 1}</span>`;
+      it.onclick = () => {
+        loadLesson(idx);
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) sidebar.classList.remove('mobile-open');
+      };
+      lw.appendChild(it);
+    });
+
+    div.appendChild(lw);
+    wrap.appendChild(div);
+  });
+}
+
+function loadLesson(idx) {
+  currentIdx = idx;
+  const lessonData = flatLessons[idx];
+  if (!lessonData) return;
+  const [title, yid] = lessonData;
+
+  const vTitle = document.getElementById('vTitle');
+  const vFrame = document.getElementById('vFrame');
+  const summaryText = document.getElementById('summaryText');
+
+  if (vTitle) vTitle.textContent = title;
+  if (vFrame) vFrame.src = 'https://www.youtube.com/embed/' + yid + '?rel=0';
+  if (summaryText) {
+    summaryText.textContent = 'ملخص سريع لهذا الجزء من "' + title + '": الدرس يشرح المفاهيم والنقاط الرئيسية مع أفكار توضيحية وأمثلة محلولة لسهولة الاستيعاب والتطبيق.';
+  }
+
+  document.querySelectorAll('.lesson-item').forEach(x => {
+    x.classList.toggle('active', +x.dataset.idx === idx);
+  });
+
+  const isDone = completedSet.has(idx);
+  const db = document.getElementById('doneBtn');
+  if (db) {
+    db.textContent = isDone ? 'تم ✓' : 'تم الإكمال ✓';
+    db.classList.toggle('done', isDone);
+  }
+
+  updateProgress();
+
+  const res = document.getElementById('result');
+  if (res) res.textContent = '';
+  document.querySelectorAll('.q-opts input').forEach(i => i.checked = false);
+}
+
+function toggleDone() {
+  if (completedSet.has(currentIdx)) {
+    completedSet.delete(currentIdx);
+  } else {
+    completedSet.add(currentIdx);
+  }
+  try {
+    localStorage.setItem('completed_' + currentSubject, JSON.stringify([...completedSet]));
+  } catch(e) {}
+  loadLesson(currentIdx);
+}
+
+function updateProgress() {
+  if (!flatLessons.length) return;
+  const pct = Math.round((completedSet.size / flatLessons.length) * 100) || 0;
+  const progBar = document.getElementById('progBar');
+  const progPill = document.getElementById('progPill');
+  const progLabel = document.getElementById('progLabel');
+
+  if (progBar) progBar.style.width = pct + '%';
+  if (progPill) progPill.textContent = 'COMPLETE ' + pct + '%';
+  if (progLabel) progLabel.textContent = `متبقي ${flatLessons.length - completedSet.size} من أصل ${flatLessons.length}`;
+}
+
+function stepLesson(dir) {
+  let n = currentIdx + dir;
+  if (n >= 0 && n < flatLessons.length) {
+    loadLesson(n);
+  }
+}
+
+function checkAnswers() {
+  const q1 = document.querySelector('input[name="q1"]:checked');
+  const q2 = document.querySelector('input[name="q2"]:checked');
+  const res = document.getElementById('result');
+
+  if (!res) return;
+  if (!q1 || !q2) {
+    res.textContent = 'من فضلك جاوب على السؤالين الأول!';
+    res.style.color = '#e53935';
+    return;
+  }
+
+  if (q1.value === 'true' && q2.value === 'true') {
+    res.textContent = '✓ أحسنت! استمر في الإنجاز.';
+    res.style.color = 'var(--green)';
+  } else {
+    res.textContent = '✗ راجع النقاط الصعبة في الفيديو وحاول مرة أخرى!';
+    res.style.color = '#e53935';
+  }
+}
+
+function goHome() {
+  const course = document.getElementById('course');
+  const home = document.getElementById('home');
+  const vFrame = document.getElementById('vFrame');
+
+  if (course) course.style.display = 'none';
+  if (home) home.style.display = 'block';
+  if (vFrame) vFrame.src = '';
+}
+
+// Service Worker Registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
